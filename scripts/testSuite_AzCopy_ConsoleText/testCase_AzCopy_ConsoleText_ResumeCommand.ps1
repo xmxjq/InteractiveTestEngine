@@ -19,7 +19,7 @@ $randomFolderName = [System.BitConverter]::ToString($md5.ComputeHash($utf8.GetBy
 cmd /c create_thousand_files.cmd
 
 log "Start uploading files"
-log "Please wait for the transfer end"
+ack "Please wait for the transfer end"
 log "AzCopy /Y /DestKey:$AccountKey ./ http://$AccountName.blob.core.windows.net/$randomFolderName/ testfile_*.txt"
 cmd /c $AzCopyPath "/Y" "/DestKey:$AccountKey" "./" "http://$AccountName.blob.core.windows.net/$randomFolderName/" "testfile_*.txt"
 
@@ -30,7 +30,7 @@ $file = Get-Item "testfile_251.txt"
 $file.IsReadOnly = $true
 
 log "Start downloading files"
-log "Please input 'a' to overwrite all files, and wait for the transfer failed"
+ack "Please input 'a' to overwrite all files, and wait for the transfer failed"
 log "AzCopy /S /SourceKey:$AccountKey http://$AccountName.blob.core.windows.net/$randomFolderName/ ./ testfile_"
 cmd /c $AzCopyPath "/S" "/SourceKey:$AccountKey" "http://$AccountName.blob.core.windows.net/$randomFolderName/" "./" "testfile_"
 
@@ -41,18 +41,15 @@ $file = Get-Item "testfile_251.txt"
 $file.IsReadOnly = $false
 
 log "Start to try the download command again"
-log "Please input 'y' to resume the transfer"
-log "Then please input 'a' to overwrite all files"
+ack "Please input 'y' to resume the transfer, then please input 'a' to overwrite all files"
 log "AzCopy /S /SourceKey:$AccountKey http://$AccountName.blob.core.windows.net/$randomFolderName/ ./ testfile_"
 cmd /c $AzCopyPath "/S" "/SourceKey:$AccountKey" "http://$AccountName.blob.core.windows.net/$randomFolderName/" "./" "testfile_"
 
-$input = read-host " The question appear and all txt looks good and no truncate, correct?`n (Y)es, (N)o"
-if ($input -eq "n") {
+if (-not (yesOrNo "The question appear and all txt looks good and no truncate, correct?")) {
 	log "Something wrong with the resume question."
 }
 else {
-	$input = read-host " The transfer has resumed, correct?`n (Y)es, (N)o"
-	if ($input -eq "n") {
+	if (-not (yesOrNo "The transfer has resumed, correct?")) {
 		log "Something wrong with the resume function."
 	}
 	else {

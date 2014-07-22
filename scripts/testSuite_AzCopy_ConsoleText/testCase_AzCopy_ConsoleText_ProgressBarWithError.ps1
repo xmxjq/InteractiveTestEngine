@@ -19,7 +19,7 @@ $randomFolderName = [System.BitConverter]::ToString($md5.ComputeHash($utf8.GetBy
 cmd /c create_thousand_files.cmd
 
 log "Start uploading files"
-log "Please Check if error shows correctly, and progress bar will move to the end of the output from azcopy while AzCopy running"
+ack "Please Check if error shows correctly, and progress bar will move to the end of the output from azcopy while AzCopy running"
 log "Uploading files"
 log "AzCopy /Y /DestKey:$AccountKey ./ http://$AccountName.blob.core.windows.net/$randomFolderName/ testfile_*.txt"
 cmd /c $AzCopyPath "/Y" "/DestKey:$AccountKey" "./" "http://$AccountName.blob.core.windows.net/$randomFolderName/" "testfile_*.txt"
@@ -32,8 +32,7 @@ log "Downloading files"
 log "AzCopy /Y /S /SourceKey:$AccountKey http://$AccountName.blob.core.windows.net/$randomFolderName/ ./ testfile_"
 cmd /c $AzCopyPath "/Y" "/S" "/SourceKey:$AccountKey" "http://$AccountName.blob.core.windows.net/$randomFolderName/" "./" "testfile_"
 
-$input = read-host " The error and the progress bar act right, correct?`n (Y)es, (N)o"
-if ($input -eq "n") {
+if (-not (yesOrNo "The error and the progress bar act right, correct?")) {
 	log "Something wrong with the progress bar while error, and the output mess."
 }
 else {

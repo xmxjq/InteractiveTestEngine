@@ -18,13 +18,12 @@ $utf8 = new-object -TypeName System.Text.UTF8Encoding
 $randomFolderName = [System.BitConverter]::ToString($md5.ComputeHash($utf8.GetBytes($randomFolderNameNumber))).Replace("-","").ToLower();
 cmd /c create_thousand_files.cmd
 
-log "Start uploading 1000 files"
-log "Please check that the progress bar will keep in the bottom of the output, and update with transfer progress"
+log "Start uploading 500 files"
+ack "Please check that the progress bar will keep in the bottom of the output, and update with transfer progress"
 log "AzCopy /Y /DestKey:$AccountKey ./ http://$AccountName.blob.core.windows.net/$randomFolderName/ testfile_*.txt"
 cmd /c $AzCopyPath "/Y" "/DestKey:$AccountKey" "./" "http://$AccountName.blob.core.windows.net/$randomFolderName/" "testfile_*.txt"
 
-$input = read-host " The progress bar act right, correct?`n (Y)es, (N)o"
-if ($input -eq "n") {
+if (-not (yesOrNo "The progress bar act right, correct?")) {
 	log "Something wrong with the progress bar."
 }
 else {

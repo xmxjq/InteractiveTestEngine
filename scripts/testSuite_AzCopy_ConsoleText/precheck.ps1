@@ -11,16 +11,9 @@ try {
 	$AzCopyPath = $global:AzCopyPath
 	$AccountName = getConfValue "AccountName"
 	$AccountKey = getConfValue "AccountKey"
-    $input = read-host " The AzCopy located at $AzCopyPath, correct?`n (Y)es, (N)o"
-    if ($input -eq "n") {
-        throw "Please modify the configuration.txt and try again."
+    if ((Test-Path $AzCopyPath.Trim("`"")) -eq $false) {
+        throw "The AzCopy.exe is missing"
     }
-	#$AzCopyCmdProcess = Start-Process cmd -ArgumentList ("/k", $AzCopyPath, "/?") -PassThru
-	#$input = read-host " The AzCopy output the help, correct?`n (Y)es, (N)o"
-	#$AzCopyCmdProcess | Stop-Process
- #   if ($input -eq "n") {
- #       throw "Please check if the AzCopy is installed correctly."
- #   }
 }
 finally {
     popd

@@ -24,7 +24,7 @@ $randomContentUploadHash | Out-File "$randomFileNameHash.txt"
 
 log "Uploading random file"
 log "AzCopy /Y /DestKey:$AccountKey ./ http://$AccountName.blob.core.windows.net/$randomFileNameHash/ $randomFileNameHash.txt"
-cmd /c $AzCopyPath, "/Y", "/DestKey:$AccountKey", "./", "http://$AccountName.blob.core.windows.net/$randomFileNameHash/", "$randomFileNameHash.txt"
+cmd /c $AzCopyPath "/Y" "/DestKey:$AccountKey" "./" "http://$AccountName.blob.core.windows.net/$randomFileNameHash/" "$randomFileNameHash.txt"
 #$AzCopyCmdProcess = Start-Process cmd -Wait -ArgumentList ("/c", $AzCopyPath, "/Y", "/V:upload.log", "/DestKey:$AccountKey", "./", "http://$AccountName.blob.core.windows.net/$randomFileNameHash/", "$randomFileNameHash.txt") -PassThru
 
 log "Removing and rebuilding local random file for test"
@@ -32,20 +32,18 @@ Remove-Item "$randomFileNameHash.txt"
 $randomContentLocalHash | Out-File "$randomFileNameHash.txt"
 
 log "Downloading random file"
-log "Please Input 'y' to commit overwrite of file"
+ack "Please Input 'y' to commit overwrite of file"
 log "$AzCopyPath /SourceKey:$AccountKey http://$AccountName.blob.core.windows.net/$randomFileNameHash/ ./ $randomFileNameHash.txt"
-cmd /c $AzCopyPath, "/SourceKey:$AccountKey", "http://$AccountName.blob.core.windows.net/$randomFileNameHash/", "./", "$randomFileNameHash.txt"
+cmd /c $AzCopyPath "/SourceKey:$AccountKey" "http://$AccountName.blob.core.windows.net/$randomFileNameHash/" "./" "$randomFileNameHash.txt"
 #$AzCopyCmdProcess = Start-Process cmd -ArgumentList ("/c", $AzCopyPath, "/V:upload.log", "/SourceKey:$AccountKey", "http://$AccountName.blob.core.windows.net/$randomFileNameHash/", "./", "$randomFileNameHash.txt") -PassThru
 
-$input = read-host " Please verify the output prompt, does it looks good, not truncate?`n (Y)es, (N)o"
-if ($input -eq "n") {
+if (-not (yesOrNo "Please verify the output prompt, does it looks good, not truncate?")) {
 	log "The output mess."
 	#$AzCopyCmdProcess | Stop-Process
 }
 else {
 	Get-Content  "$randomFileNameHash.txt" | Write-Host
-	$input = read-host " The content of the file is $randomContentUploadHash, correct?`n (Y)es, (N)o"
-    if ($input -eq "n") {
+    if (-not (yesOrNo "The content of the file is $randomContentUploadHash, correct?")) {
         $passed = $false
     }
 	else {
