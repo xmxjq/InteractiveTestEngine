@@ -21,13 +21,13 @@ function setConfValue ($key, $value) {
 
     $c = $c | % {
         if ($_ -like "$key=*") {
-		    $_ = "$key=$value"
-		    $existed = $true
+            $_ = "$key=$value"
+            $existed = $true
         }
-	    $_
+        $_
     }
     if (-not $existed) {
-	    $c += "$key=$value"
+        $c += "$key=$value"
     }
     $c | Out-File "configuration.txt"
     return
@@ -45,12 +45,14 @@ function cleanUpTestFileAndAzCopyInstanceAndJnl() {
     Remove-Item "$env:SystemDrive\Users\$env:username\AppData\Local\Microsoft\Azure\AzCopy\*.jnl"
 }
 
-function runExecutableWithArgs($command, $argList) {	
+function runExecutableWithArgs($command, $argList) {    
     if ($Host.Name -match 'ise'){
-        Start-Process $command -Wait -ArgumentList $argList
+        $newArgList = @("/k", "`"$command`"")
+        $newArgList += $argList
+        $openWindow = Start-Process cmd -Wait -ArgumentList $newArgList -PassThru 
     }
     else {
-	    & $command $argList
+        & $command $argList
     }
 }
 
